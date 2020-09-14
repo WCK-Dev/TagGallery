@@ -44,13 +44,77 @@
 				$("input[name='g_tag']").val(existingTag + "," +newTag);	
 			}
 			
+			$("#newTag").val('');
 			$(".tags").append("<b><span class='badge badge-pill badge-primary'>" + newTag + "</span> <a class='text-danger' onclick='deleteThisTag(this)'>&nbsp;x</a></b>")
 		}
 	}
 	
 	function deleteThisTag(a_tag) {
+		var existingTag = $("input[name='g_tag']").val()+'';
+		var splitTags = existingTag.split(',');
 		var delTag = $(a_tag).prev().text();
-		console.log(delTag);
+		var newVal = "";
+		
+		
+		for(i=0; i<splitTags.length; i++) {
+			if(splitTags[i] != delTag) {
+				if(newVal == '') {
+					newVal = splitTags[i];
+				} else {
+					newVal = newVal + "," + splitTags[i];
+				}
+			}
+		}
+		
+		$("input[name='g_tag']").val(newVal);
+		
+		$(a_tag).parent().remove();
+	}
+	
+	function testValidation() {
+		var g_title =  $("input[name='g_title']").val();
+		var g_content =  $("textarea[name='g_content']").val();
+		var g_tag =  $("input[name='g_tag']").val();
+		
+		if(g_title.trim() == '') {
+			alert("게시글 제목을 입력해주세요");
+			$("input[name='g_title']").focus();
+			return false;
+		}
+		if(g_content.trim() == '') {
+			alert("게시글 내용을 입력해주세요");
+			$("textarea[name='g_content']").focus();
+			return false;
+		}
+		if(g_tag.trim() == '') {
+			alert("최소 하나의 태그를 추가해주세요");
+			$("input[id='newTag']").focus();
+			return false;
+		}
+	}
+	
+	function chkFileType(obj) {
+
+		var fileKind = obj.value.lastIndexOf('.');
+		var fileName = obj.value.substring(fileKind+1,obj.length);
+		var fileType = fileName.toLowerCase();
+
+		var checkFileType = new Array();
+
+		checkFileType=['jpg','gif','png','jpeg','bmp','tif'];
+
+		if(checkFileType.indexOf(fileType)==-1) {
+
+			alert('이미지만 업로드 가능합니다.');
+
+			var parentObj = obj.parentNode;
+			var node = parentObj.replaceChild(obj.cloneNode(true),obj);
+
+			$("#files").val(""); 
+
+			return false;
+		}
+
 	}
 
 </script>
@@ -58,22 +122,22 @@
 </head>
 <body>
 	<div class="container wrapper">
-		<form class="text-center border border-light p-5" action="writeGallery" method="post" onsubmit="return empCheck()">
+		<form class="text-center border border-light p-5" action="writeGallery.do" enctype="multipart/form-data" method="post" onsubmit="return testValidation()">
 			<input type="hidden" name="g_tag" value="">
 		
 		    <p class="h4 mb-4">갤러리 글작성</p>
 		
 		    <!-- Name -->
-		    <input type="text" name="b_writer" class="form-control mb-4" placeholder="Writer" value="" readonly>
+		    <input type="text" name="g_writer" class="form-control mb-4" placeholder="Writer" value="" readonly>
 			
 			<hr>
 			
 			<!-- Title -->
-		    <input type="text" name="b_title" class="form-control mb-4" placeholder="Title" required>
+		    <input type="text" name="g_title" class="form-control mb-4" placeholder="Title">
 		    
 		    <!-- Content -->
 		    <div class="form-group text-left">
-		        <textarea id="b_content" name="b_content" class="w-100 form-control rounded-0" placeholder="Content" rows="13"></textarea>
+		        <textarea id="b_content" name="g_content" class="w-100 form-control rounded-0" placeholder="Content" rows="13"></textarea>
 		    </div>
 		    
 		    <div class="form-group text-left">
@@ -83,7 +147,7 @@
 		    </div>
 			
 		    <div class="form-group text-left">
-		        <input type="file" multiple="multiple">
+		        <input type="file" id="files" multiple="multiple" accept="image/*" onchange="chkFileType(this)">
 		    </div>
 		    
 			<div class="container text-right">

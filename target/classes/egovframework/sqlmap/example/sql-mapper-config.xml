@@ -5,5 +5,8 @@
     <typeAliases>
 		<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
 		<typeAlias alias="userVO" type="egovframework.example.gallery.service.UserVO"/>
+		<typeAlias alias="galleryVO" type="egovframework.example.gallery.service.GalleryVO"/>
+		<typeAlias alias="filesVO" type="egovframework.example.gallery.service.FilesVO"/>
+		<typeAlias alias="tagVO" type="egovframework.example.gallery.service.TagVO"/>
     </typeAliases>
 </configuration>
