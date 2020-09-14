@@ -21,21 +21,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import egovframework.example.gallery.service.ServeyService;
+import egovframework.example.gallery.service.GalleryService;
+import egovframework.example.gallery.service.UserVO;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
 
 @Service("galleryService")
-public class ServeyServiceImpl extends EgovAbstractServiceImpl implements ServeyService {
+public class GalleryServiceImpl extends EgovAbstractServiceImpl implements GalleryService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServeyServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(GalleryServiceImpl.class);
 
 	// mybatis 사용
 	@Resource(name="galleryMapper")
-	private ServeyMapper galleryDAO;
+	private GalleryMapper galleryDAO;
 
 	@Resource(name = "egovIdGnrService")
 	private EgovIdGnrService egovIdGnrService;
+
+	@Override
+	public UserVO login(UserVO vo) {
+		return galleryDAO.login(vo);
+	}
 
 	
 	

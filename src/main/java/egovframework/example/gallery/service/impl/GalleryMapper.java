@@ -15,10 +15,12 @@
  */
 package egovframework.example.gallery.service.impl;
 
+import egovframework.example.gallery.service.UserVO;
 import egovframework.rte.psl.dataaccess.mapper.Mapper;
 
 @Mapper("galleryMapper")
-public interface ServeyMapper {
+public interface GalleryMapper {
 	
+	UserVO login(UserVO vo);
 	
 }
