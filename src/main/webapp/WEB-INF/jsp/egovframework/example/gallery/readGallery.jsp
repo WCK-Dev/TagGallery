@@ -60,6 +60,9 @@ function del(g_seq, regPath) {
 	<div class="container wrapper">
 
 		<div class="text-center">
+			<h2 style="margin-top: 60px; display: inline-block;"><a href="galleryMain.do">태그 갤러리 게시판</a></h2>
+			<hr>
+			
 		    <p class="h4 mb-4">갤러리 상세보기</p>
 		    
 		    <!-- title -->

@@ -38,11 +38,19 @@ public interface GalleryMapper {
 	
 	List<GalleryVO> selectGalleryList(GalleryVO vo);
 	
+	int selectGalleryListTotCnt(GalleryVO vo);
+	
 	GalleryVO selectGallery(GalleryVO vo);
 	
 	void updateGalleryReadCnt(GalleryVO vo);
 	
 	List<FilesVO> selectFileList(GalleryVO vo);
+	
+	int updateGallery(GalleryVO vo);
+	
+	int deleteTag(TagVO vo);
+	
+	int deleteFile(FilesVO vo);
 	
 	int deleteGallery(GalleryVO vo);
 }

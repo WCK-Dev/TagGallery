@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -27,6 +26,7 @@ import egovframework.example.gallery.service.GalleryVO;
 import egovframework.example.gallery.service.TagVO;
 import egovframework.example.gallery.service.UserVO;
 import egovframework.rte.fdl.property.EgovPropertyService;
+import egovframework.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 
 @Controller
 public class GalleryController {
@@ -68,7 +68,22 @@ public class GalleryController {
 	@RequestMapping(value="galleryMain.do")
 	public String galleryMain(ModelMap model, GalleryVO gvo) {
 		
+		/** pageing setting */
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo(gvo.getPageIndex());
+		paginationInfo.setRecordCountPerPage(gvo.getPageUnit());
+		paginationInfo.setPageSize(gvo.getPageSize());
+
+		gvo.setFirstIndex(paginationInfo.getFirstRecordIndex());
+		gvo.setLastIndex(paginationInfo.getLastRecordIndex());
+		gvo.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
+
 		model.addAttribute("galleryList", galleryService.selectGalleryList(gvo));
+		model.addAttribute("gallery", gvo);
+
+		int totCnt = galleryService.selectGalleryListTotCnt(gvo);
+		paginationInfo.setTotalRecordCount(totCnt);
+		model.addAttribute("paginationInfo", paginationInfo);
 		
 		return "gallery/galleryMain";
 	}
@@ -169,9 +184,92 @@ public class GalleryController {
 	}
 	
 	@RequestMapping(value="updateGallery.do", method=RequestMethod.POST)
-	public String updateGallery(MultipartHttpServletRequest mtfRequest, GalleryVO gvo, ModelMap model){
+	public String updateGallery(MultipartHttpServletRequest mtfRequest, GalleryVO gvo, String delFileList,  ModelMap model) throws IllegalArgumentException, IOException {
 		
-		return "";
+		//수정전 원글 정보 저장
+		GalleryVO beforeGvo = galleryService.selectGallery(gvo);
+		//갤러리 글 수정
+		galleryService.updateGallery(gvo);
+		
+		
+		//태그수정
+		String beforeTags = beforeGvo.getG_tag();
+		String newTags = gvo.getG_tag();
+		
+		TagVO tvo = new TagVO();
+		tvo.setG_seq(gvo.getG_seq());
+		
+		for(String tag : newTags.split(",")) {
+			//새로운 태그를 split하여 기존 태그에 존재하지않으면 새로운 태그로 추가
+			if(!beforeTags.contains(tag)) {
+				tvo.setT_name(tag);
+				galleryService.insertTag(tvo);
+			}	
+		}
+		
+		for(String oldTag : beforeTags.split(",")) {
+			//기존 태그를 split하여 새로운 태그에 존재하지 않으면, 해당 태그 DB데이터를 삭제
+			if(!newTags.contains(oldTag)) {
+				tvo.setT_name(oldTag);
+				galleryService.deleteTag(tvo);
+			}
+		}
+		
+		//파일 DB수정
+		//사용자가 제거한 첨부파일 DB에서 삭제
+		String[] delFiles = delFileList.split(",");
+		
+		FilesVO fvo = new FilesVO();
+		fvo.setG_seq(gvo.getG_seq());
+		
+		for(String delFile :delFiles) {
+			fvo.setF_originname(delFile);
+			galleryService.deleteFile(fvo);
+		}
+		
+		//사용자가 새롭게 추가한 첨부파일 DB에 추가( + 파일업로드)
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		
+		File dir = new File(uploadPath + "/" + sdf.format(beforeGvo.getG_regdate()));
+
+        //선택된 파일의 숫자를 List로 받아 반복하면서, 업로드 진행
+		List<MultipartFile> fileList = mtfRequest.getFiles("files");
+		
+		if(!(fileList.size() == 1 && fileList.get(0).getOriginalFilename().equals(""))) {
+			
+			for (int i=0; i<fileList.size(); i++) {
+				
+				String originalFileName = fileList.get(i).getOriginalFilename();
+				
+				String extension = originalFileName.substring(originalFileName.lastIndexOf(".") + 1);
+				
+				String serverFileName = UUID.randomUUID().toString() + "." + extension;
+				
+				long fileSize = fileList.get(i).getSize();
+				
+				File images = new File(dir, serverFileName);
+				
+				fileList.get(i).transferTo(images);
+				
+				//섬네일작업
+				/*if(i==0) {
+					if (images.exists()) {
+						
+					}
+				}*/
+				
+				FilesVO eachFile = new FilesVO();
+				
+				eachFile.setF_originname(originalFileName);
+				eachFile.setF_uploadname(serverFileName);
+				eachFile.setF_fsize(fileSize);
+				eachFile.setG_seq(gvo.getG_seq());
+				
+				galleryService.insertFile(eachFile);
+			}
+		}
+
+		return "redirect:/readGallery.do?g_seq=" + gvo.getG_seq();
 	}
 	
 	@RequestMapping(value="deleteGallery.do", method=RequestMethod.POST)

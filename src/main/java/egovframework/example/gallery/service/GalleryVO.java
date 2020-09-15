@@ -2,7 +2,7 @@ package egovframework.example.gallery.service;
 
 import java.sql.Date;
 
-public class GalleryVO {
+public class GalleryVO extends GalleryDefaultVO {
 	
 	private int g_seq;
 	private String g_title;

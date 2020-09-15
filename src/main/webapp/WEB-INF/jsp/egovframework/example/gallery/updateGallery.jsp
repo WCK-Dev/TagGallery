@@ -6,7 +6,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>갤러리 글작성</title>
+<title>갤러리 글수정</title>
 <%@include file="../cmmn/common_top.jsp"%>
 
 <style>
@@ -128,14 +128,35 @@
 		}
 
 	}
+	
+	function addDelFileList(delButton) {
+		
+		var existingDelList = $("input[name='delFileList']").val()+'';
+		var splitDelList = existingDelList.split(',');
+		var delFileName = $(delButton).prev().text();
+		
+		if(existingDelList == '') {
+			$("input[name='delFileList']").val(delFileName);
+		} else {
+			$("input[name='delFileList']").val(existingDelList + "," +delFileName);	
+		}
+		
+		$(delButton).parent().remove();
+		
+	}
 
 </script>
 
 </head>
 <body>
 	<div class="container wrapper">
-		<form class="text-center border border-light p-5" action="writeGallery.do" enctype="multipart/form-data" method="post" onsubmit="return testValidation()">
+		<form class="text-center border border-light p-5" action="updateGallery.do" enctype="multipart/form-data" method="post" onsubmit="return testValidation()">
 			<input type="hidden" name="g_tag" value="${gallery.g_tag }">
+			<input type="hidden" name="delFileList" value="">
+			<input type="hidden" name="g_seq" value="${gallery.g_seq }">
+		
+			<h2 style="margin-top: 60px; display: inline-block;"><a href="galleryMain.do">태그 갤러리 게시판</a></h2>
+			<hr>
 		
 		    <p class="h4 mb-4">갤러리 글 수정</p>
 		
@@ -151,6 +172,15 @@
 		    <div class="form-group text-left">
 		        <textarea id="b_content" name="g_content" class="w-100 form-control rounded-0" placeholder="Content" rows="13">${gallery.g_content }</textarea>
 		    </div>
+		    
+	     	<!-- Download Files -->
+		    <div class="text-left mb-4" style="border: 1px solid lightgray; border-radius: 5px; padding: 10px"><p class="text-10">첨부파일 : </p>
+		    	<c:forEach items="${fileList }" var="file">
+					<div>
+						<i class="fas fa-file-image"></i><a style="margin: 0 25px">${file.fOriginname}</a><a class='text-danger' onclick='addDelFileList(this)'>삭제하기</a>
+					</div>
+				</c:forEach>
+			</div>
 		    
 		    <div class="form-group text-left">
 		    	<input type="text" class="form-control" id="newTag" placeholder="태그명 추가" style="width: 30%; display: inline">

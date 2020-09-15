@@ -66,7 +66,21 @@
 			  ,g.g_writer AS g_writer
 			  ,f.f_thumbname AS g_thumbname
 		FROM gallery g
-		JOIN files f ON g.g_seq = f.g_seq AND f.f_thumbname IS NOT NULL;
+		JOIN files f ON g.g_seq = f.g_seq AND f.f_thumbname IS NOT NULL
+		WHERE 1 = 1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+		LIMIT #{firstIndex}, #{recordCountPerPage}
+	</select>
+	
+	<select id="selectGalleryListTotCnt" resultType="int">
+		SELECT COUNT(*) totcnt
+			FROM gallery
+			WHERE 1 = 1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
 	</select>
 	
 	<select id="selectGallery" resultType="galleryVO">
@@ -87,6 +101,24 @@
 		WHERE g_seq = ${g_seq}
 		ORDER BY f_seq;
 	</select>
+	
+	<update id="updateGallery">
+		UPDATE gallery
+		SET g_title = #{g_title} 
+		   ,g_content = #{g_content}
+		   ,g_tag = #{g_tag}
+		WHERE g_seq = #{g_seq} AND g_writer = #{g_writer}
+	</update>
+	
+	<delete id="deleteTag">
+		DELETE FROM tag
+		WHERE t_name = #{t_name} AND g_seq = #{g_seq}
+	</delete>
+	
+	<delete id="deleteFile">
+		DELETE FROM files
+		WHERE f_originname= #{f_originname} AND g_seq = #{g_seq}
+	</delete>
 	
 	<delete id="deleteGallery">
 		DELETE FROM gallery

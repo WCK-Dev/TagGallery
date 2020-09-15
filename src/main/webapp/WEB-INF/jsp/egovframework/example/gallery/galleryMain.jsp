@@ -3,6 +3,7 @@
 <%@ taglib prefix="c"		uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" 	uri="http://java.sun.com/jsp/jstl/fmt" %>	
 <%@ taglib prefix="fn" 		uri="http://java.sun.com/jsp/jstl/functions" %>	
+<%@ taglib prefix="ui"     	uri="http://egovframework.gov/ctl/ui"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -26,27 +27,41 @@
 .text-right { clear: both;}
 
 </style>
+
+<script>
+
+function fn_link_page(pageNo){
+	document.galleryListForm.pageIndex.value = pageNo;
+	document.galleryListForm.action = "galleryMain.do";
+   	document.galleryListForm.submit();
+}
+
+</script>
+
 </head>
 <body>
 
 	<div class="container wrapper">
 		
-		<h2 style="margin-top: 60px; display: inline-block;">태그 갤러리 게시판</h2>
+		<h2 style="margin-top: 60px; display: inline-block;"><a href="galleryMain.do">태그 갤러리 게시판</a></h2>
+		
 		<div style="margin-left: 58%">
+		<form class="form-inline ml-auto" action="galleryMain.do" method="get" id="galleryListForm" name="galleryListForm">
 			<!-- Navbar brand -->
-			<form class="form-inline ml-auto" action="index" method="get">
-				<select name="condition" class="browser-default custom-select mr-2 mb-2">
-				  <option value="b_title">제목</option>
-				  <option value="b_writer">내용</option>
-				  <option value="b_content">첨부파일명</option>
+				<select name="searchCondition" class="browser-default custom-select mr-2 mb-2">
+				  <option value="g_title" <c:if test="${gallery.searchCondition=='g_title' || board.searchCondition=='' }">selected</c:if>>제목</option>
+				  <option value="g_content" <c:if test="${gallery.searchCondition=='g_content'}">selected</c:if>>내용</option>
+				  <option value="g_tag" <c:if test="${gallery.searchCondition=='g_tag'}">selected</c:if>>태그</option>
+				  <option value="f_originname" <c:if test="${gallery.searchCondition=='f_originname'}">selected</c:if>>첨부파일명</option>
 				</select>
 				<div class="row mx-0">
-					<input class="col form-control mt-1" type="text" name="keyword" placeholder="Search" value="">
+					<input class="col form-control mt-1" type="text" name="searchKeyword" placeholder="Search" value="${gallery.searchKeyword }">
 					<button class="col btn btn-primary my-0 mb-2 ml-3" type="submit">검색</button>
 				</div>
-			</form>
+			<input type="hidden" id="pageIndex" name="pageIndex" value="1">
+		</form>
 		</div>
-
+		
 		<hr>
 		
 		<!-- Content -->
@@ -83,6 +98,12 @@
 				<tr><td>10</td></tr>
 			</table>
 		</div>
+		
+		<!-- 페이징 -->
+		<ul class="pagination" style="width: 100%; text-align:center;">
+   			<ui:pagination paginationInfo = "${paginationInfo}" type="image" jsFunction="fn_link_page" />
+       	</ul>
+       	
 		<div class="text-right">
 			<button style="width: 100px; height:50px; padding:5px;" class="btn btn-primary mb-3" onclick="location='writeGallery.do'">글쓰기</button>
 		</div>
