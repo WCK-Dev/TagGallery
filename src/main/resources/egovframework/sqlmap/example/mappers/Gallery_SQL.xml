@@ -8,4 +8,88 @@
 		WHERE u_id = #{u_id} 
 			AND u_pwd = #{u_pwd}
 	</select>
+	
+	<select id="selectMaxGseq" resultType="int">
+		SELECT IFNULL(max(g_seq),0) +1 from gallery
+	</select>
+	
+	<insert id="insertGallery">
+		INSERT INTO gallery(g_seq
+					  	   ,g_title
+				   	  	   ,g_content
+				   	  	   ,g_regdate
+				   	  	   ,g_tag
+				   	  	   ,g_writer
+						   )
+					VALUES(#{g_seq}
+					  	  ,#{g_title}
+					  	  ,#{g_content}
+					  	  ,sysdate()
+					  	  ,#{g_tag}
+					  	  ,#{g_writer}
+						  )
+	</insert>
+	
+	<insert id="insertFile">
+		INSERT INTO files(f_originname
+						 ,f_uploadname
+						 ,f_thumbname
+						 ,f_fsize
+						 ,g_seq
+						 )
+					VALUES(#{f_originname}
+						  ,#{f_uploadname}
+						  ,#{f_thumbname}
+						  ,#{f_fsize}
+						  ,#{g_seq}
+						  )
+	</insert>
+	
+	<insert id="insertTag">
+		INSERT INTO tag(t_name
+					   ,t_regdate
+					   ,g_seq
+					   )
+				VALUES(#{t_name}
+					  ,sysdate()
+					  ,#{g_seq}
+					  )
+	</insert>
+	
+	<select id="selectGalleryList" resultType="egovMap">
+		SELECT g.g_seq AS g_seq
+		      ,g.g_title AS g_title
+			  ,g.g_content AS g_content
+			  ,g.g_regdate AS g_regdate
+			  ,g.g_readcnt AS g_readcnt
+			  ,g.g_tag AS g_tag
+			  ,g.g_writer AS g_writer
+			  ,f.f_thumbname AS g_thumbname
+		FROM gallery g
+		JOIN files f ON g.g_seq = f.g_seq AND f.f_thumbname IS NOT NULL;
+	</select>
+	
+	<select id="selectGallery" resultType="galleryVO">
+		SELECT *
+		FROM gallery
+		WHERE g_seq = ${g_seq}
+	</select>
+	
+	<update id="updateGalleryReadCnt">
+		UPDATE gallery
+		SET g_readcnt = g_readcnt + 1
+		WHERE g_seq = ${g_seq}
+	</update>
+	
+	<select id="selectFileList" resultType="egovMap">
+		SELECT *
+		FROM files
+		WHERE g_seq = ${g_seq}
+		ORDER BY f_seq;
+	</select>
+	
+	<delete id="deleteGallery">
+		DELETE FROM gallery
+		WHERE g_seq = ${g_seq} AND g_writer = #{g_writer}
+	</delete>
 </mapper>

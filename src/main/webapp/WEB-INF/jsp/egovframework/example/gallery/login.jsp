@@ -25,7 +25,7 @@ if('${loginErrMsg}' == 'true'){
 		<p class="h4 mb-4">로그인 페이지</p>
 		
 	    <!-- ID -->
-	    <input type="text" name="u_id" class="form-control mb-4" placeholder="ID" value="${rememberId }">
+	    <input type="text" name="u_id" class="form-control mb-4" placeholder="ID">
 	
 	    <!-- Password -->
 	    <input type="password" name="u_pwd" class="form-control mb-4" placeholder="Password">

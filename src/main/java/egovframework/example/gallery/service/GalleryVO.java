@@ -11,6 +11,7 @@ public class GalleryVO {
 	private int g_readcnt;
 	private String g_tag;
 	private String g_writer;
+	private String g_thumbname;
 	
 	public int getG_seq() {
 		return g_seq;
@@ -53,5 +54,11 @@ public class GalleryVO {
 	}
 	public void setG_writer(String g_writer) {
 		this.g_writer = g_writer;
+	}
+	public String getG_thumbname() {
+		return g_thumbname;
+	}
+	public void setG_thumbname(String g_thumbname) {
+		this.g_thumbname = g_thumbname;
 	}
 }

@@ -15,6 +15,11 @@
  */
 package egovframework.example.gallery.service.impl;
 
+import java.util.List;
+
+import egovframework.example.gallery.service.FilesVO;
+import egovframework.example.gallery.service.GalleryVO;
+import egovframework.example.gallery.service.TagVO;
 import egovframework.example.gallery.service.UserVO;
 import egovframework.rte.psl.dataaccess.mapper.Mapper;
 
@@ -23,4 +28,21 @@ public interface GalleryMapper {
 	
 	UserVO login(UserVO vo);
 	
+	int selectMaxGseq();
+	
+	int insertGallery(GalleryVO vo);
+	
+	int insertFile(FilesVO vo);
+	
+	int insertTag(TagVO vo);
+	
+	List<GalleryVO> selectGalleryList(GalleryVO vo);
+	
+	GalleryVO selectGallery(GalleryVO vo);
+	
+	void updateGalleryReadCnt(GalleryVO vo);
+	
+	List<FilesVO> selectFileList(GalleryVO vo);
+	
+	int deleteGallery(GalleryVO vo);
 }

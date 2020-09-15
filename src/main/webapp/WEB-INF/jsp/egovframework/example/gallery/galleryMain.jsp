@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>	
+<%@ taglib prefix="c"		uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" 	uri="http://java.sun.com/jsp/jstl/fmt" %>	
+<%@ taglib prefix="fn" 		uri="http://java.sun.com/jsp/jstl/functions" %>	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -15,12 +16,12 @@
 
 .wrapper { min-height: 70vh;}
 
-.contents { float: left; width: 100%; box-sizing: border-box; text-align: center; margin-bottom: 50px;} 
+.contents { float: left; width: 100%; box-sizing: border-box; text-align: center; margin-bottom: 50px; min-height: 600px;} 
 
-.content_box { display: inline-block; display: inline-block; width: 30%; height: 25%; position: relative; overflow: hidden; margin: 10px; min-width: 180px; color: black; text-align: center; font-size: 16px; border: 2px solid lightgray; border-radius: 10px; }
-.content_box img { display:block; width: 100%; align: center}
+.content_box { display: inline-block; display: inline-block; width: 250px; height: 25%; position: relative; overflow: hidden; margin: 10px; min-width: 180px; color: black; text-align: center; font-size: 16px; border: 2px solid lightgray; border-radius: 10px; }
+.content_box img { display:block; width: 250px; height:150px; align: center}
 
-.tag_Rank { position: absolute; left: 85%; top: 50%;}
+.tag_Rank { position: absolute; left: 85%; top: 30%;}
 
 .text-right { clear: both;}
 
@@ -50,38 +51,21 @@
 		
 		<!-- Content -->
 		<div class="contents">
+		<c:forEach items="${galleryList }" var="gallery">
+			<c:set var="tags" value="${fn:split(gallery.gTag, ',') }"/>
 			<div class="content_box">
-		    	<a href="#">
-			    	<img class="content_img" src="${pageContext.request.contextPath }/images/dog.jpg"> 
-			    	<span>게시글제목</span><br>
+		    	<a href="readGallery.do?g_seq=${gallery.gSeq }">
+			    	<img class="content_img" src="${pageContext.request.contextPath }/upload/${gallery.gRegdate }/${gallery.gThumbname }">
+			    	<span>${gallery.gTitle }</span><br>
 		    	</a>
-		    	<span>게시글작성자</span><br>
-		    	<span>태그 : #강아지, #동물</span>
+		    	<span>${gallery.gWriter }</span><br>
+		    	<span>
+		    		<c:forEach items="${tags }" var="eachTag">
+		    			<a href="#">#${eachTag }</a>&nbsp;&nbsp;
+		    		</c:forEach>
+		    	</span>
 		    </div>
-			<div class="content_box">
-		    	<a href="#">
-			    	<img class="content_img" src="${pageContext.request.contextPath }/images/dog.jpg"> 
-			    	<span>게시글제목</span><br>
-		    	</a>
-		    	<span>게시글작성자</span><br>
-		    	<span>태그 : #강아지, #동물</span>
-		    </div>
-			<div class="content_box">
-		    	<a href="#">
-			    	<img class="content_img" src="${pageContext.request.contextPath }/images/dog.jpg"> 
-			    	<span>게시글제목</span><br>
-		    	</a>
-		    	<span>게시글작성자</span><br>
-		    	<span>태그 : #강아지, #동물</span>
-		    </div>
-			<div class="content_box">
-		    	<a href="#">
-			    	<img class="content_img" src="${pageContext.request.contextPath }/images/dog.jpg"> 
-			    	<span>게시글제목</span><br>
-		    	</a>
-		    	<span>게시글작성자</span><br>
-		    	<span>태그 : #강아지, #동물</span>
-		    </div>
+		</c:forEach>
 		</div>
 		
 		<div class="tag_Rank">

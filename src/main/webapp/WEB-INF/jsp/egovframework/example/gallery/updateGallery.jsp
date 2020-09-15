@@ -22,6 +22,18 @@
 </style>
 
 <script>
+	$(document).ready(function() {
+		var existingTag = $("input[name='g_tag']").val()+'';
+		var splitTags = existingTag.split(',');
+		
+		splitTags.forEach(function(element){
+			if(element.trim() != '') {
+				$(".tags").append("<b><span class='badge badge-pill badge-primary'>" + element + "</span> <a class='text-danger' onclick='deleteThisTag(this)'>&nbsp;x</a></b>")				
+			}
+		});
+		
+	});
+
 	function addTag() {
 		var existingTag = $("input[name='g_tag']").val()+'';
 		var splitTags = existingTag.split(',');
@@ -123,9 +135,9 @@
 <body>
 	<div class="container wrapper">
 		<form class="text-center border border-light p-5" action="writeGallery.do" enctype="multipart/form-data" method="post" onsubmit="return testValidation()">
-			<input type="hidden" name="g_tag" value="">
+			<input type="hidden" name="g_tag" value="${gallery.g_tag }">
 		
-		    <p class="h4 mb-4">갤러리 글작성</p>
+		    <p class="h4 mb-4">갤러리 글 수정</p>
 		
 		    <!-- Name -->
 		    <input type="text" name="g_writer" class="form-control mb-4" placeholder="Writer" value="${sessionScope.user.u_id }" readonly>
@@ -133,11 +145,11 @@
 			<hr>
 			
 			<!-- Title -->
-		    <input type="text" name="g_title" class="form-control mb-4" placeholder="Title">
+		    <input type="text" name="g_title" class="form-control mb-4" placeholder="Title" value="${gallery.g_title }">
 		    
 		    <!-- Content -->
 		    <div class="form-group text-left">
-		        <textarea id="b_content" name="g_content" class="w-100 form-control rounded-0" placeholder="Content" rows="13"></textarea>
+		        <textarea id="b_content" name="g_content" class="w-100 form-control rounded-0" placeholder="Content" rows="13">${gallery.g_content }</textarea>
 		    </div>
 		    
 		    <div class="form-group text-left">
@@ -151,8 +163,8 @@
 		    </div>
 		    
 			<div class="container text-right">
-				<button type="submit" style="width: 100px; height:40px; padding:5px;" class="btn btn-primary mb-3">글쓰기</button>
-				<button type="button" style="width: 100px; height:40px; padding:5px;" class="btn btn-primary mb-3" onclick="location='galleryMain.do'">취소</button>
+				<button type="submit" style="width: 100px; height:40px; padding:5px;" class="btn btn-primary mb-3">수정하기</button>
+				<button type="button" style="width: 100px; height:40px; padding:5px;" class="btn btn-primary mb-3" onclick="location='readGallery.do?g_seq=${gallery.g_seq}'">취소</button>
 			</div>
 		</form>
 	</div>

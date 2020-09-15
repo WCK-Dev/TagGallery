@@ -6,8 +6,9 @@ public class FilesVO {
 	private String f_originname;
 	private String f_uploadname;
 	private String f_thumbname;
-	private int f_fsize;
+	private long f_fsize;
 	private int f_downcnt;
+	private int g_seq;
 	
 	public int getF_seq() {
 		return f_seq;
@@ -33,10 +34,10 @@ public class FilesVO {
 	public void setF_thumbname(String f_thumbname) {
 		this.f_thumbname = f_thumbname;
 	}
-	public int getF_fsize() {
+	public long getF_fsize() {
 		return f_fsize;
 	}
-	public void setF_fsize(int f_fsize) {
+	public void setF_fsize(long f_fsize) {
 		this.f_fsize = f_fsize;
 	}
 	public int getF_downcnt() {
@@ -44,5 +45,11 @@ public class FilesVO {
 	}
 	public void setF_downcnt(int f_downcnt) {
 		this.f_downcnt = f_downcnt;
+	}
+	public int getG_seq() {
+		return g_seq;
+	}
+	public void setG_seq(int g_seq) {
+		this.g_seq = g_seq;
 	}
 }

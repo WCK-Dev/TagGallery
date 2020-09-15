@@ -15,13 +15,18 @@
  */
 package egovframework.example.gallery.service.impl;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import egovframework.example.gallery.service.FilesVO;
 import egovframework.example.gallery.service.GalleryService;
+import egovframework.example.gallery.service.GalleryVO;
+import egovframework.example.gallery.service.TagVO;
 import egovframework.example.gallery.service.UserVO;
 import egovframework.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import egovframework.rte.fdl.idgnr.EgovIdGnrService;
@@ -43,6 +48,45 @@ public class GalleryServiceImpl extends EgovAbstractServiceImpl implements Galle
 		return galleryDAO.login(vo);
 	}
 
+	@Override
+	public int selectMaxGseq() {
+		return galleryDAO.selectMaxGseq();
+	}
 	
-	
+	@Override
+	public int insertGallery(GalleryVO vo) {
+		return galleryDAO.insertGallery(vo);
+	}
+
+	@Override
+	public int insertFile(FilesVO vo) {
+		return galleryDAO.insertFile(vo);
+	}
+
+	@Override
+	public int insertTag(TagVO vo) {
+		return galleryDAO.insertTag(vo);
+	}
+
+	@Override
+	public List<GalleryVO> selectGalleryList(GalleryVO vo) {
+		return galleryDAO.selectGalleryList(vo);
+	}
+
+	@Override
+	public GalleryVO selectGallery(GalleryVO vo) {
+		galleryDAO.updateGalleryReadCnt(vo);
+		return galleryDAO.selectGallery(vo);
+	}
+
+	@Override
+	public List<FilesVO> selectFileList(GalleryVO vo) {
+		return galleryDAO.selectFileList(vo);
+	}
+
+	@Override
+	public int deleteGallery(GalleryVO vo) {
+		return galleryDAO.deleteGallery(vo);
+	}
+
 }
