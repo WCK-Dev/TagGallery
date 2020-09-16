@@ -154,6 +154,7 @@
 			<input type="hidden" name="g_tag" value="${gallery.g_tag }">
 			<input type="hidden" name="delFileList" value="">
 			<input type="hidden" name="g_seq" value="${gallery.g_seq }">
+			<input type="hidden" name="datePath" value="${gallery.g_regdate }">
 		
 			<h2 style="margin-top: 60px; display: inline-block;"><a href="galleryMain.do">태그 갤러리 게시판</a></h2>
 			<hr>

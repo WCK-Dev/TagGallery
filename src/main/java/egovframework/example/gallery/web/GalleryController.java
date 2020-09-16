@@ -189,7 +189,7 @@ public class GalleryController {
 	}
 	
 	@RequestMapping(value="updateGallery.do", method=RequestMethod.POST)
-	public String updateGallery(MultipartHttpServletRequest mtfRequest, GalleryVO gvo, String delFileList,  ModelMap model) throws IllegalArgumentException, IOException {
+	public String updateGallery(MultipartHttpServletRequest mtfRequest, GalleryVO gvo, String delFileList, String datePath, ModelMap model) throws IllegalArgumentException, IOException {
 		
 		//수정전 원글 정보 저장
 		GalleryVO beforeGvo = galleryService.selectGallery(gvo);
@@ -231,17 +231,22 @@ public class GalleryController {
 			int f_seq = Integer.parseInt(delFileSeq);
 			fvo.setF_seq(f_seq);
 			
+			//해당 파일을 서버에서 삭제하기위해, 서버내의 물리명으로 파일 객체 생성
 			fvo = galleryService.selectFile(fvo);
 			deleteFileName = fvo.getF_uploadname();
-			//File deleteFile = new File(uploadPath + ); 
+			File deleteFile = new File(uploadPath + datePath + "/" + deleteFileName);
+			
+			//서버에 존재하는 파일을 삭제
+			if(deleteFile.exists()) { 
+				deleteFile.delete();
+			}
 		
+			//DB에서 해당 파일의 정보를 삭제
 			galleryService.deleteFile(fvo);
 		}
 		
 		//사용자가 새롭게 추가한 첨부파일 DB에 추가( + 파일업로드)
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		
-		File dir = new File(uploadPath + "/" + sdf.format(beforeGvo.getG_regdate()));
+		File dir = new File(uploadPath + "/" + datePath);
 
         //선택된 파일의 숫자를 List로 받아 반복하면서, 업로드 진행
 		List<MultipartFile> fileList = mtfRequest.getFiles("files");
@@ -261,13 +266,6 @@ public class GalleryController {
 				File images = new File(dir, serverFileName);
 				
 				fileList.get(i).transferTo(images);
-				
-				//섬네일작업
-				/*if(i==0) {
-					if (images.exists()) {
-						
-					}
-				}*/
 				
 				FilesVO eachFile = new FilesVO();
 				

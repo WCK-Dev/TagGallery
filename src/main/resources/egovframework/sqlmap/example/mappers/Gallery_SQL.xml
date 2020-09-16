@@ -96,7 +96,7 @@
 	</update>
 	
 	<select id="selectFile" resultType="filesVO">
-		SELECT f_originname, f_uploadname, f_downcnt
+		SELECT *
 		FROM files
 		WHERE f_seq = #{f_seq}
 	</select>
