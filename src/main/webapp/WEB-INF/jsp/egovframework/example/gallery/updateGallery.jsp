@@ -133,12 +133,12 @@
 		
 		var existingDelList = $("input[name='delFileList']").val()+'';
 		var splitDelList = existingDelList.split(',');
-		var delFileName = $(delButton).prev().text();
+		var delFileSeq = $(delButton).next().val();
 		
 		if(existingDelList == '') {
-			$("input[name='delFileList']").val(delFileName);
+			$("input[name='delFileList']").val(delFileSeq);
 		} else {
-			$("input[name='delFileList']").val(existingDelList + "," +delFileName);	
+			$("input[name='delFileList']").val(existingDelList + "," +delFileSeq);	
 		}
 		
 		$(delButton).parent().remove();
@@ -178,6 +178,7 @@
 		    	<c:forEach items="${fileList }" var="file">
 					<div>
 						<i class="fas fa-file-image"></i><a style="margin: 0 25px">${file.fOriginname}</a><a class='text-danger' onclick='addDelFileList(this)'>삭제하기</a>
+						<input type="hidden" value="${file.fSeq }">
 					</div>
 				</c:forEach>
 			</div>

@@ -1,14 +1,19 @@
 package egovframework.example.gallery.web;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
@@ -220,10 +225,16 @@ public class GalleryController {
 		String[] delFiles = delFileList.split(",");
 		
 		FilesVO fvo = new FilesVO();
-		fvo.setG_seq(gvo.getG_seq());
+		String deleteFileName = null;
 		
-		for(String delFile :delFiles) {
-			fvo.setF_originname(delFile);
+		for(String delFileSeq :delFiles) {
+			int f_seq = Integer.parseInt(delFileSeq);
+			fvo.setF_seq(f_seq);
+			
+			fvo = galleryService.selectFile(fvo);
+			deleteFileName = fvo.getF_uploadname();
+			//File deleteFile = new File(uploadPath + ); 
+		
 			galleryService.deleteFile(fvo);
 		}
 		
@@ -270,6 +281,73 @@ public class GalleryController {
 		}
 
 		return "redirect:/readGallery.do?g_seq=" + gvo.getG_seq();
+	}
+	
+	
+	@RequestMapping(value="downloadFile.do", method=RequestMethod.GET)
+	public void fileDownload (FilesVO fvo, String datePath, HttpServletRequest request, HttpServletResponse response) {
+		//다운로드 요청된 파일의 정보를 DB로부터 획득
+		fvo = galleryService.selectFile(fvo);
+		
+		String fileOriginName = fvo.getF_originname();
+		String fileFullPath = uploadPath + datePath + "/" + fvo.getF_uploadname();
+		String userBrowser = request.getHeader("User-Agent");
+		String downName = null;
+		
+		File downloadFile = new File(fileFullPath);
+		
+		FileInputStream fileInputStream = null;
+        ServletOutputStream servletOutputStream = null;
+        
+        try {
+        	//다운로드 시 원본 파일명을 그대로 유지할 수 있게 원본 파일명을 인코딩하여 브라우저에 맞게 세팅함
+           if(userBrowser.contains("MSIE") || userBrowser.contains("Trident") || userBrowser.contains("Chrome")){
+        	   downName = URLEncoder.encode(fileOriginName,"UTF-8").replaceAll("\\+", "%20");
+           }else {
+               downName = new String(fileOriginName.getBytes("UTF-8"), "ISO-8859-1");
+           }
+
+           response.setHeader("Content-Disposition","attachment;filename=\"" + downName +"\"");
+           response.setContentType("application/octer-stream");
+           response.setHeader("Content-Transfer-Encoding", "binary;");
+
+           fileInputStream = new FileInputStream(downloadFile);
+
+           servletOutputStream = response.getOutputStream();
+
+           byte b [] = new byte[1024];
+           int data = 0;
+
+           // 바이트를 더이상 읽을 수 없으면 -1 return
+           while((data=(fileInputStream.read(b, 0, b.length))) != -1) {
+                servletOutputStream.write(b, 0, data);
+           }
+
+           servletOutputStream.flush(); // 출력
+           // 다운로드 횟수 증가
+
+       } catch (UnsupportedEncodingException e) {
+           e.printStackTrace();
+       } catch (IOException e) {
+           e.printStackTrace();
+       } finally {
+
+		   if(servletOutputStream != null){
+			   try{
+				   servletOutputStream.close();
+	           }catch (IOException e){
+	               e.printStackTrace();
+               }
+	       }
+		   if(fileInputStream != null){
+		       try{
+		           fileInputStream.close();
+	           }catch (IOException e){
+	               e.printStackTrace();
+               }
+	       }
+	   }
+		
 	}
 	
 	@RequestMapping(value="deleteGallery.do", method=RequestMethod.POST)

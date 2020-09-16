@@ -20,6 +20,8 @@ public interface GalleryService {
 	
 	GalleryVO selectGallery(GalleryVO vo);
 	
+	FilesVO selectFile(FilesVO vo);
+	
 	List<FilesVO> selectFileList(GalleryVO vo);
 	
 	int updateGallery(GalleryVO vo);

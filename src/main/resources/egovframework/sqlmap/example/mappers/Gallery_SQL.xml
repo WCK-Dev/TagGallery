@@ -95,6 +95,12 @@
 		WHERE g_seq = ${g_seq}
 	</update>
 	
+	<select id="selectFile" resultType="filesVO">
+		SELECT f_originname, f_uploadname, f_downcnt
+		FROM files
+		WHERE f_seq = #{f_seq}
+	</select>
+	
 	<select id="selectFileList" resultType="egovMap">
 		SELECT *
 		FROM files
@@ -117,7 +123,7 @@
 	
 	<delete id="deleteFile">
 		DELETE FROM files
-		WHERE f_originname= #{f_originname} AND g_seq = #{g_seq}
+		WHERE f_seq = #{f_seq}
 	</delete>
 	
 	<delete id="deleteGallery">

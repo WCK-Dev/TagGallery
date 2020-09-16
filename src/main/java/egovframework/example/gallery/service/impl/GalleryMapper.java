@@ -44,6 +44,8 @@ public interface GalleryMapper {
 	
 	void updateGalleryReadCnt(GalleryVO vo);
 	
+	FilesVO selectFile(FilesVO vo);
+	
 	List<FilesVO> selectFileList(GalleryVO vo);
 	
 	int updateGallery(GalleryVO vo);

@@ -52,6 +52,11 @@ function del(g_seq, regPath) {
 		});
 	}
 }
+
+function downloadThisFile(f_seq, datePath) {
+	downloadThisFile('${file.fSeq }','${gallery.g_regdate }')
+	
+}
 </script>
 
 </head>
@@ -87,7 +92,7 @@ function del(g_seq, regPath) {
 		    <!-- Download Files -->
 		    <div class="text-left mb-4" style="border: 1px solid lightgray; border-radius: 5px; padding: 10px"><p class="text-10">첨부파일 : </p>
 		    	<c:forEach items="${fileList }" var="file">
-					<i class="fas fa-file-image"></i><a style="margin: 0 25px">${file.fOriginname}</a><small style="color: gray;">다운로드수 : ${file.fDowncnt }</small><br>
+					<i class="fas fa-file-image"></i><a style="margin: 0 25px" href="downloadFile.do?f_seq=${file.fSeq }&datePath=${gallery.g_regdate }">${file.fOriginname}</a><small style="color: gray;">다운로드수 : ${file.fDowncnt }</small><br>
 				</c:forEach>
 			</div>
 		    
