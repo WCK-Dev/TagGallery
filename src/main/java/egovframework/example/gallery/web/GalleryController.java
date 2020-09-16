@@ -84,6 +84,7 @@ public class GalleryController {
 		gvo.setRecordCountPerPage(paginationInfo.getRecordCountPerPage());
 
 		model.addAttribute("galleryList", galleryService.selectGalleryList(gvo));
+		model.addAttribute("tagRank", galleryService.selectTagRank());
 		model.addAttribute("gallery", gvo);
 
 		int totCnt = galleryService.selectGalleryListTotCnt(gvo);
@@ -145,7 +146,7 @@ public class GalleryController {
 				
 				FilesVO eachFile = new FilesVO();
 				
-				if(i == 0) eachFile.setF_thumbname(serverFileName); // 섬네일은 첫 반복(하나의 사진파일에만 입력)
+				eachFile.setF_thumbname(serverFileName);
 				eachFile.setF_originname(originalFileName);
 				eachFile.setF_uploadname(serverFileName);
 				eachFile.setF_fsize(fileSize);
@@ -228,6 +229,8 @@ public class GalleryController {
 		String deleteFileName = null;
 		
 		for(String delFileSeq :delFiles) {
+			if(delFileSeq.equals("") || delFileSeq == null) break;
+			
 			int f_seq = Integer.parseInt(delFileSeq);
 			fvo.setF_seq(f_seq);
 			
@@ -269,6 +272,7 @@ public class GalleryController {
 				
 				FilesVO eachFile = new FilesVO();
 				
+				eachFile.setF_thumbname(serverFileName);
 				eachFile.setF_originname(originalFileName);
 				eachFile.setF_uploadname(serverFileName);
 				eachFile.setF_fsize(fileSize);
@@ -322,7 +326,7 @@ public class GalleryController {
            }
 
            servletOutputStream.flush(); // 출력
-           // 다운로드 횟수 증가
+           galleryService.updateFileDownCnt(fvo); // 다운로드 횟수 증가
 
        } catch (UnsupportedEncodingException e) {
            e.printStackTrace();
@@ -355,16 +359,26 @@ public class GalleryController {
 		String u_id = ((UserVO)session.getAttribute("user")).getU_id();
 		gvo.setG_writer(u_id);
 		
+		//삭제해야할 파일 리스트 확인
+		List<FilesVO> delFiles = galleryService.selectFileList(gvo);
+		String deleteFileName = null;
+		
+		for(FilesVO delfvo : delFiles) {
+			//각각의 삭제할 파일의 저장경로 내 물리파일명을 획득
+			deleteFileName = delfvo.getF_uploadname();
+			//파일 객체 생성후, 삭제
+			File deleteFile = new File(uploadPath + regPath + "/" + deleteFileName);
+			
+			if(deleteFile.exists()) { 
+				deleteFile.delete();
+			}
+			
+			//파일 삭제후, DB에서도 해당 파일 정보를 삭제
+			galleryService.deleteFile(delfvo);
+		}
 		
 		return galleryService.deleteGallery(gvo) + "";
 		
-		/*
-		//삭제해야할 파일 리스트 확인
-		List<FilesVO> delFiles = galleryService.selectFileList(gvo);
-		
-		// 갤러리 글 삭제이후, 파일 삭제처리
-		if(result == 1) { 
-		}*/
 	}
 	
 }

@@ -18,9 +18,13 @@ public interface GalleryService {
 	
 	int selectGalleryListTotCnt(GalleryVO vo);
 	
+	List<TagVO> selectTagRank();
+	
 	GalleryVO selectGallery(GalleryVO vo);
 	
 	FilesVO selectFile(FilesVO vo);
+	
+	void updateFileDownCnt(FilesVO vo);
 	
 	List<FilesVO> selectFileList(GalleryVO vo);
 	

@@ -40,11 +40,15 @@ public interface GalleryMapper {
 	
 	int selectGalleryListTotCnt(GalleryVO vo);
 	
+	List<TagVO> selectTagRank();
+	
 	GalleryVO selectGallery(GalleryVO vo);
 	
 	void updateGalleryReadCnt(GalleryVO vo);
 	
 	FilesVO selectFile(FilesVO vo);
+	
+	void updateFileDownCnt(FilesVO vo);
 	
 	List<FilesVO> selectFileList(GalleryVO vo);
 	

@@ -49,6 +49,13 @@
 		}
 	}
 	
+	function enterAdd() {
+		if(event.keyCode == 13) {
+			event.preventDefault();
+			addTag();
+		}
+	}
+	
 	function deleteThisTag(a_tag) {
 		var existingTag = $("input[name='g_tag']").val()+'';
 		var splitTags = existingTag.split(',');
@@ -141,7 +148,7 @@
 		    </div>
 		    
 		    <div class="form-group text-left">
-		    	<input type="text" class="form-control" id="newTag" placeholder="태그명 추가" style="width: 30%; display: inline">
+		    	<input type="text" class="form-control" id="newTag" placeholder="태그명 추가" onkeypress="enterAdd()" style="width: 30%; display: inline">
 		        <button type="button" onclick="addTag()" style="width: 100px; height:40px; padding:5px;" class="btn btn-primary mb-3">태그추가하기</button>
 		        <div class="tags"><!-- 태그추가시 badge 추가되는 div --></div>
 		    </div>

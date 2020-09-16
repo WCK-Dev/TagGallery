@@ -56,21 +56,14 @@
 					  )
 	</insert>
 	
-	<select id="selectGalleryList" resultType="egovMap">
-		SELECT g.g_seq AS g_seq
-		      ,g.g_title AS g_title
-			  ,g.g_content AS g_content
-			  ,g.g_regdate AS g_regdate
-			  ,g.g_readcnt AS g_readcnt
-			  ,g.g_tag AS g_tag
-			  ,g.g_writer AS g_writer
-			  ,f.f_thumbname AS g_thumbname
+	<select id="selectGalleryList" resultType="galleryVO">
+		SELECT g_seq, g_title, g_content, g_regdate, g_readcnt, g_tag, g_writer, (SELECT f_thumbname FROM files f WHERE f.g_seq = g.g_seq GROUP BY g_seq) AS g_thumbname
 		FROM gallery g
-		JOIN files f ON g.g_seq = f.g_seq AND f.f_thumbname IS NOT NULL
 		WHERE 1 = 1
 		<if test="searchKeyword != null and searchKeyword != ''">
 			AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
 		</if>
+		ORDER BY g_seq DESC
 		LIMIT #{firstIndex}, #{recordCountPerPage}
 	</select>
 	
@@ -81,6 +74,14 @@
 			<if test="searchKeyword != null and searchKeyword != ''">
 				AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
 			</if>
+	</select>
+	
+	<select id="selectTagRank" resultType="tagVO">
+		SELECT t_name, COUNT(t_name) AS t_usecnt
+		FROM tag
+		GROUP BY t_name
+		ORDER BY t_usecnt DESC, t_name ASC
+		LIMIT 5
 	</select>
 	
 	<select id="selectGallery" resultType="galleryVO">
@@ -101,7 +102,13 @@
 		WHERE f_seq = #{f_seq}
 	</select>
 	
-	<select id="selectFileList" resultType="egovMap">
+	<update id="updateFileDownCnt">
+		UPDATE files
+		SET f_downcnt = f_downcnt + 1
+		WHERE f_seq = #{f_seq}
+	</update>
+	
+	<select id="selectFileList" resultType="filesVO">
 		SELECT *
 		FROM files
 		WHERE g_seq = ${g_seq}

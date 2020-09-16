@@ -61,6 +61,13 @@
 		}
 	}
 	
+	function enterAdd() {
+		if(event.keyCode == 13) {
+			event.preventDefault();
+			addTag();
+		}
+	}
+	
 	function deleteThisTag(a_tag) {
 		var existingTag = $("input[name='g_tag']").val()+'';
 		var splitTags = existingTag.split(',');
@@ -178,14 +185,14 @@
 		    <div class="text-left mb-4" style="border: 1px solid lightgray; border-radius: 5px; padding: 10px"><p class="text-10">첨부파일 : </p>
 		    	<c:forEach items="${fileList }" var="file">
 					<div>
-						<i class="fas fa-file-image"></i><a style="margin: 0 25px">${file.fOriginname}</a><a class='text-danger' onclick='addDelFileList(this)'>삭제하기</a>
-						<input type="hidden" value="${file.fSeq }">
+						<i class="fas fa-file-image"></i><a style="margin: 0 25px">${file.f_originname}</a><a class='text-danger' onclick='addDelFileList(this)'>삭제하기</a>
+						<input type="hidden" value="${file.f_seq }">
 					</div>
 				</c:forEach>
 			</div>
 		    
 		    <div class="form-group text-left">
-		    	<input type="text" class="form-control" id="newTag" placeholder="태그명 추가" style="width: 30%; display: inline">
+		    	<input type="text" class="form-control" id="newTag" placeholder="태그명 추가" onkeypress="enterAdd()" style="width: 30%; display: inline">
 		        <button type="button" onclick="addTag()" style="width: 100px; height:40px; padding:5px;" class="btn btn-primary mb-3">태그추가하기</button>
 		        <div class="tags"><!-- 태그추가시 badge 추가되는 div --></div>
 		    </div>

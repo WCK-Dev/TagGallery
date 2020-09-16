@@ -53,10 +53,6 @@ function del(g_seq, regPath) {
 	}
 }
 
-function downloadThisFile(f_seq, datePath) {
-	downloadThisFile('${file.fSeq }','${gallery.g_regdate }')
-	
-}
 </script>
 
 </head>
@@ -92,7 +88,7 @@ function downloadThisFile(f_seq, datePath) {
 		    <!-- Download Files -->
 		    <div class="text-left mb-4" style="border: 1px solid lightgray; border-radius: 5px; padding: 10px"><p class="text-10">첨부파일 : </p>
 		    	<c:forEach items="${fileList }" var="file">
-					<i class="fas fa-file-image"></i><a style="margin: 0 25px" href="downloadFile.do?f_seq=${file.fSeq }&datePath=${gallery.g_regdate }">${file.fOriginname}</a><small style="color: gray;">다운로드수 : ${file.fDowncnt }</small><br>
+					<i class="fas fa-file-image"></i><a style="margin: 0 25px" href="downloadFile.do?f_seq=${file.f_seq }&datePath=${gallery.g_regdate }">${file.f_originname}</a><small style="color: gray;">다운로드수 : ${file.f_downcnt }</small><br>
 				</c:forEach>
 			</div>
 		    
@@ -101,7 +97,7 @@ function downloadThisFile(f_seq, datePath) {
 		    <!-- Content -->
 		    <div class="text-left mb-3">
 		    	<c:forEach items="${fileList }" var="file">
-		    		<img src="${pageContext.request.contextPath }/upload/${gallery.g_regdate }/${file.fUploadname }"><br>
+		    		<img src="${pageContext.request.contextPath }/upload/${gallery.g_regdate }/${file.f_uploadname }"><br>
 		    	</c:forEach>
 		    
 				<p style="margin-top: 50px"><c:out value="${fn:replace(gallery.g_content, crcn, br)}" escapeXml="false"/></p>

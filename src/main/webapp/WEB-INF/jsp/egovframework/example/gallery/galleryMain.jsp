@@ -17,12 +17,14 @@
 
 .wrapper { min-height: 70vh;}
 
-.contents { float: left; width: 100%; box-sizing: border-box; text-align: center; margin-bottom: 50px; min-height: 600px;} 
+.contents { float: left; width: 100%; box-sizing: border-box; text-align: center; margin-bottom: 50px; min-height: 500px;} 
 
 .content_box { display: inline-block; display: inline-block; width: 250px; height: 25%; position: relative; overflow: hidden; margin: 10px; min-width: 180px; color: black; text-align: center; font-size: 16px; border: 2px solid lightgray; border-radius: 10px; }
 .content_box img { display:block; width: 250px; height:150px; align: center}
 
-.tag_Rank { position: absolute; left: 85%; top: 30%;}
+.tag_Rank { position: absolute; left: 85%; top: 30%; text-align: center;}
+.tag_Rank tr { height: 40px; border: 1px solid lightgray;}
+.tag_Rank td { width: 150px;}
 
 .text-right { clear: both;}
 
@@ -34,6 +36,12 @@ function fn_link_page(pageNo){
 	document.galleryListForm.pageIndex.value = pageNo;
 	document.galleryListForm.action = "galleryMain.do";
    	document.galleryListForm.submit();
+}
+
+function searchThisTag(searchKeyword){
+	$("select[name='searchCondition']").val("g_tag");
+	$("input[name='searchKeyword']").val(searchKeyword);
+	document.galleryListForm.submit();
 }
 
 </script>
@@ -66,17 +74,22 @@ function fn_link_page(pageNo){
 		
 		<!-- Content -->
 		<div class="contents">
-		<c:forEach items="${galleryList }" var="gallery">
-			<c:set var="tags" value="${fn:split(gallery.gTag, ',') }"/>
+		<c:forEach items="${galleryList }" var="galleryOne">
+			<c:set var="tags" value="${fn:split(galleryOne.g_tag, ',') }"/>
 			<div class="content_box">
-		    	<a href="readGallery.do?g_seq=${gallery.gSeq }">
-			    	<img class="content_img" src="${pageContext.request.contextPath }/upload/${gallery.gRegdate }/${gallery.gThumbname }">
-			    	<span>${gallery.gTitle }</span><br>
+		    	<a href="readGallery.do?g_seq=${galleryOne.g_seq }">
+		    		<c:if test="${galleryOne.g_thumbname != null }">
+				    	<img class="content_img" src="${pageContext.request.contextPath }/upload/${galleryOne.g_regdate }/${galleryOne.g_thumbname }">
+		    		</c:if>
+		    		<c:if test="${galleryOne.g_thumbname == null }">
+				    	<img class="content_img" src="${pageContext.request.contextPath }/upload/no_image.jpg">
+		    		</c:if>
+			    	<span>${galleryOne.g_title }</span><br>
 		    	</a>
-		    	<span>${gallery.gWriter }</span><br>
+		    	<span>${galleryOne.g_writer }</span><br>
 		    	<span>
 		    		<c:forEach items="${tags }" var="eachTag">
-		    			<a href="#">#${eachTag }</a>&nbsp;&nbsp;
+		    			<a href="#" onclick="searchThisTag('${eachTag }')">#${eachTag }</a>&nbsp;
 		    		</c:forEach>
 		    	</span>
 		    </div>
@@ -85,17 +98,19 @@ function fn_link_page(pageNo){
 		
 		<div class="tag_Rank">
 			<table>
-				<tr><th>태그순위 #10</th></tr>
-				<tr><td>1</td></tr>
-				<tr><td>2</td></tr>
-				<tr><td>3</td></tr>
-				<tr><td>4</td></tr>
-				<tr><td>5</td></tr>
-				<tr><td>6</td></tr>
-				<tr><td>7</td></tr>
-				<tr><td>8</td></tr>
-				<tr><td>9</td></tr>
-				<tr><td>10</td></tr>
+				<tr><th>태그순위 #5</th></tr>
+				<c:forEach items="${tagRank }" var="rank" varStatus="i">
+					<tr 
+						<c:if test="${i.index == 0}">class="table-primary"</c:if>
+						<c:if test="${i.index == 1}">class="table-success"</c:if>
+						<c:if test="${i.index == 2}">class="table-danger"</c:if>
+						<c:if test="${i.index == 3}">class="table-warning"</c:if>
+						<c:if test="${i.index == 4}">class="table-info"</c:if>
+					>
+						<td><a href="#" onclick="searchThisTag('${rank.t_name }')">#${rank.t_name }</a> <small style="color:red;">(총 ${rank.t_usecnt }개)</small></td>
+					</tr>
+				</c:forEach>
+				<tr><td><a href="#">인기태그 사용현황</a></td></tr>
 			</table>
 		</div>
 		

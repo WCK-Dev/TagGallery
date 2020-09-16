@@ -1,3 +1,1 @@
 C:\eGovFrameDev-3.8.0-64bit\workspace\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\TagGallery\upload\
-
-C:\eGovFrameDev-3.8.0-64bit\workspace\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\TagGallery\upload\
