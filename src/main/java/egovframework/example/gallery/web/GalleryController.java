@@ -1,5 +1,6 @@
 package egovframework.example.gallery.web;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -11,21 +12,21 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor.HSSFColorPredefined;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.imgscalr.Scalr;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,6 +80,14 @@ public class GalleryController {
 		}
 	}
 	
+	@RequestMapping(value="logout.do")
+	public String logout(HttpServletRequest request) {
+		
+		request.getSession().removeAttribute("user");
+		
+		return "redirect:/login.do";
+	}
+	
 	
 	@RequestMapping(value="galleryMain.do")
 	public String galleryMain(ModelMap model, GalleryVO gvo) {
@@ -122,8 +131,9 @@ public class GalleryController {
 		//파일 등록 & 태그 등록
 		Date today = new Date(System.currentTimeMillis());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String dirPath = uploadPath + "/" + sdf.format(today);
 		
-        File dir = new File(uploadPath + "/" + sdf.format(today));
+        File dir = new File(dirPath);
         
         //파일 원본 이미지와 섬네일이 업로드될 디렉토리를 생성
         if (!dir.isDirectory()) dir.mkdirs();
@@ -147,16 +157,12 @@ public class GalleryController {
 				
 				fileList.get(i).transferTo(images);
 				
-				//섬네일작업
-				/*if(i==0) {
-					if (images.exists()) {
-						
-					}
-				}*/
+				//섬네일 생성 및 저장
+				String f_thumbname = makeThumbnail(images.getAbsolutePath(), serverFileName, extension, dirPath);
 				
 				FilesVO eachFile = new FilesVO();
 				
-				eachFile.setF_thumbname(serverFileName);
+				eachFile.setF_thumbname(f_thumbname);
 				eachFile.setF_originname(originalFileName);
 				eachFile.setF_uploadname(serverFileName);
 				eachFile.setF_fsize(fileSize);
@@ -237,6 +243,7 @@ public class GalleryController {
 		
 		FilesVO fvo = new FilesVO();
 		String deleteFileName = null;
+		String deleteThumbName = null;
 		
 		for(String delFileSeq :delFiles) {
 			if(delFileSeq.equals("") || delFileSeq == null) break;
@@ -247,11 +254,16 @@ public class GalleryController {
 			//해당 파일을 서버에서 삭제하기위해, 서버내의 물리명으로 파일 객체 생성
 			fvo = galleryService.selectFile(fvo);
 			deleteFileName = fvo.getF_uploadname();
+			deleteThumbName = fvo.getF_thumbname();
 			File deleteFile = new File(uploadPath + datePath + "/" + deleteFileName);
+			File thumbFile = new File(uploadPath + datePath + "/" + deleteThumbName);
 			
 			//서버에 존재하는 파일을 삭제
 			if(deleteFile.exists()) { 
 				deleteFile.delete();
+			}
+			if(thumbFile.exists()) { 
+				thumbFile.delete();
 			}
 		
 			//DB에서 해당 파일의 정보를 삭제
@@ -259,7 +271,8 @@ public class GalleryController {
 		}
 		
 		//사용자가 새롭게 추가한 첨부파일 DB에 추가( + 파일업로드)
-		File dir = new File(uploadPath + "/" + datePath);
+		String dirPath = uploadPath + "/" + datePath;
+		File dir = new File(dirPath);
 
         //선택된 파일의 숫자를 List로 받아 반복하면서, 업로드 진행
 		List<MultipartFile> fileList = mtfRequest.getFiles("files");
@@ -280,9 +293,11 @@ public class GalleryController {
 				
 				fileList.get(i).transferTo(images);
 				
+				String f_thumbname = makeThumbnail(images.getAbsolutePath(), serverFileName, extension, dirPath);
+				
 				FilesVO eachFile = new FilesVO();
 				
-				eachFile.setF_thumbname(serverFileName);
+				eachFile.setF_thumbname(f_thumbname);
 				eachFile.setF_originname(originalFileName);
 				eachFile.setF_uploadname(serverFileName);
 				eachFile.setF_fsize(fileSize);
@@ -372,15 +387,23 @@ public class GalleryController {
 		//삭제해야할 파일 리스트 확인
 		List<FilesVO> delFiles = galleryService.selectFileList(gvo);
 		String deleteFileName = null;
+		String deleteThumbName = null;
 		
 		for(FilesVO delfvo : delFiles) {
+			
 			//각각의 삭제할 파일의 저장경로 내 물리파일명을 획득
 			deleteFileName = delfvo.getF_uploadname();
+			deleteThumbName = delfvo.getF_thumbname();
 			//파일 객체 생성후, 삭제
 			File deleteFile = new File(uploadPath + regPath + "/" + deleteFileName);
+			File thumbFile = new File(uploadPath + regPath + "/" + deleteThumbName);
 			
 			if(deleteFile.exists()) { 
 				deleteFile.delete();
+			}
+			
+			if(thumbFile.exists()) { 
+				thumbFile.delete();
 			}
 			
 			//파일 삭제후, DB에서도 해당 파일 정보를 삭제
@@ -486,6 +509,39 @@ public class GalleryController {
 	    wb.write(response.getOutputStream());
 	    wb.close();
 
+	}
+	
+	//썸네일 생성 메서드
+	private String makeThumbnail(String filePath, String serverFileName, String extension, String dirPath) throws IOException {
+		BufferedImage srcImg = ImageIO.read(new File(filePath)); 
+		
+		int dw = 250, dh = 150; 
+		
+		int ow = srcImg.getWidth(); 
+		int oh = srcImg.getHeight(); 
+		
+		// 원본 너비를 기준으로 하여 썸네일의 비율로 높이를 계산합니다. 
+		int nw = ow; 
+		int nh = (ow * dh) / dw; 
+		
+		// 계산된 높이가 원본보다 높다면 crop이 안되므로 
+		// 원본 높이를 기준으로 썸네일의 비율로 너비를 계산합니다. 
+		if(nh > oh) {
+			nw = (oh * dw) / dh; 
+			nh = oh; 
+		} 
+		
+		BufferedImage cropImg = Scalr.crop(srcImg, (ow-nw)/2, (oh-nh)/2, nw, nh); 
+		BufferedImage destImg = Scalr.resize(cropImg, dw, dh); 
+		
+		String thumbName = dirPath + "/THUMB_" + serverFileName; 
+		
+		File thumbFile = new File(thumbName);
+		
+		ImageIO.write(destImg, extension, thumbFile);
+		
+		return "THUMB_" + serverFileName;
+		
 	}
 	
 }

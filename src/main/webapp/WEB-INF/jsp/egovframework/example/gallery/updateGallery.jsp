@@ -157,6 +157,11 @@
 </head>
 <body>
 	<div class="container wrapper">
+		<div class="userBox" style="width: 100%; padding-top:20px; text-align: right;">
+			${sessionScope.user.u_name }(${sessionScope.user.u_id })님 환영합니다.
+			<button class="btn btn-danger" onclick="location.href='logout.do'">로그아웃</button>
+		</div>
+		
 		<form class="text-center border border-light p-5" action="updateGallery.do" enctype="multipart/form-data" method="post" onsubmit="return testValidation()">
 			<input type="hidden" name="g_tag" value="${gallery.g_tag }">
 			<input type="hidden" name="delFileList" value="">

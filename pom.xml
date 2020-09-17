@@ -184,6 +184,13 @@
 			<artifactId>poi-ooxml</artifactId>
 			<version>3.16</version>
 		</dependency>
+		
+		<!-- 썸네일 생성을 위한 imgscalr 디펜던시 -->
+		<dependency> 
+			<groupId>org.imgscalr</groupId>
+			<artifactId>imgscalr-lib</artifactId>
+			<version>4.2</version>
+		</dependency>
 
 	</dependencies>
 

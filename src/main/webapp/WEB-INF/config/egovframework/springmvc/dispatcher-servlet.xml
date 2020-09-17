@@ -69,6 +69,7 @@
 			<mvc:mapping path="/writeGallery.do" />
 			<mvc:mapping path="/updateGallery.do" />
 			<mvc:mapping path="/deleteGallery.do" />
+			<mvc:mapping path="/tagStatusMenu.do" />
 			<ref bean="loginAuthInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>

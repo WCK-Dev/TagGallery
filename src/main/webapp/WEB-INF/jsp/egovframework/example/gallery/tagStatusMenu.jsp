@@ -50,6 +50,10 @@
 </head>
 <body>
 	<div class="container wrapper text-center">
+		<div class="userBox" style="width: 100%; padding-top:20px; text-align: right;">
+			${sessionScope.user.u_name }(${sessionScope.user.u_id })님 환영합니다.
+			<button class="btn btn-danger" onclick="location.href='logout.do'">로그아웃</button>
+		</div>
 		
 		<h2 style="margin-top: 60px; display: inline-block;"><a href="galleryMain.do">게시판 메인</a></h2>
 		
