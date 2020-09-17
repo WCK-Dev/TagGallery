@@ -2,6 +2,8 @@ package egovframework.example.gallery.service;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 public interface GalleryService {
 	
 	UserVO login(UserVO vo);
