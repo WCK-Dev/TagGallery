@@ -46,6 +46,10 @@ public interface GalleryMapper {
 	
 	void updateGalleryReadCnt(GalleryVO vo);
 	
+	void updateTagReadCnt(GalleryVO vo);
+	
+	int selectTagDownCnt(TagVO vo);
+	
 	FilesVO selectFile(FilesVO vo);
 	
 	void updateFileDownCnt(FilesVO vo);

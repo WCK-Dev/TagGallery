@@ -86,6 +86,7 @@ public class GalleryServiceImpl extends EgovAbstractServiceImpl implements Galle
 	@Override
 	public GalleryVO selectGallery(GalleryVO vo) {
 		galleryDAO.updateGalleryReadCnt(vo);
+		galleryDAO.updateTagReadCnt(vo);
 		return galleryDAO.selectGallery(vo);
 	}
 	
@@ -122,6 +123,11 @@ public class GalleryServiceImpl extends EgovAbstractServiceImpl implements Galle
 	@Override
 	public int deleteFile(FilesVO vo) {
 		return galleryDAO.deleteFile(vo);
+	}
+
+	@Override
+	public int selectTagDownCnt(TagVO vo) {
+		return galleryDAO.selectTagDownCnt(vo);
 	}
 
 }

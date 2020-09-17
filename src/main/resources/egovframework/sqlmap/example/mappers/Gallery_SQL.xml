@@ -57,11 +57,17 @@
 	</insert>
 	
 	<select id="selectGalleryList" resultType="galleryVO">
-		SELECT g_seq, g_title, g_content, g_regdate, g_readcnt, g_tag, g_writer, (SELECT f_thumbname FROM files f WHERE f.g_seq = g.g_seq GROUP BY g_seq) AS g_thumbname
+		SELECT g_seq, g_title, g_content, g_regdate, g_readcnt, g_tag, g_writer, (SELECT f_thumbname FROM files f WHERE f.g_seq = g.g_seq GROUP BY g_seq) AS g_thumbname, 
+		(SELECT GROUP_CONCAT(f_originname SEPARATOR ',') FROM files f WHERE f.g_seq = g.g_seq GROUP BY g_seq) AS f_originname
 		FROM gallery g
 		WHERE 1 = 1
 		<if test="searchKeyword != null and searchKeyword != ''">
-			AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+			<if test="searchCondition != 'f_originname'">
+				AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+			<if test="searchCondition == 'f_originname'">
+				AND (SELECT GROUP_CONCAT(f_originname SEPARATOR ',') FROM files f WHERE f.g_seq = g.g_seq GROUP BY g_seq) LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
 		</if>
 		ORDER BY g_seq DESC
 		LIMIT #{firstIndex}, #{recordCountPerPage}
@@ -69,15 +75,20 @@
 	
 	<select id="selectGalleryListTotCnt" resultType="int">
 		SELECT COUNT(*) totcnt
-			FROM gallery
+			FROM gallery g
 			WHERE 1 = 1
 			<if test="searchKeyword != null and searchKeyword != ''">
-				AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+				<if test="searchCondition != 'f_originname'">
+					AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+				</if>
+				<if test="searchCondition == 'f_originname'">
+					AND (SELECT GROUP_CONCAT(f_originname SEPARATOR ',') FROM files f WHERE f.g_seq = g.g_seq GROUP BY g_seq) LIKE CONCAT('%', #{searchKeyword}, '%')
+				</if>
 			</if>
 	</select>
 	
 	<select id="selectTagRank" resultType="tagVO">
-		SELECT t_name, COUNT(t_name) AS t_usecnt
+		SELECT t_name, COUNT(t_name) AS t_usecnt, SUM(t_readcnt) AS t_readcnt
 		FROM tag
 		GROUP BY t_name
 		ORDER BY t_usecnt DESC, t_name ASC
@@ -95,6 +106,19 @@
 		SET g_readcnt = g_readcnt + 1
 		WHERE g_seq = ${g_seq}
 	</update>
+	
+	<update id="updateTagReadCnt">
+		UPDATE Tag
+		SET t_readcnt = t_readcnt + 1
+		WHERE g_seq = ${g_seq}
+	</update>
+	
+	<select id="selectTagDownCnt" resultType="int">
+		SELECT SUM(f.f_downcnt) AS t_downcnt
+		FROM gallery g
+		JOIN files f 
+		WHERE g.g_seq = f.g_seq AND g_tag LIKE CONCAT('%', #{t_name}, '%')
+	</select>
 	
 	<select id="selectFile" resultType="filesVO">
 		SELECT *

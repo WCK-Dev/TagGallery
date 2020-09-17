@@ -110,7 +110,7 @@ function searchThisTag(searchKeyword){
 						<td><a href="#" onclick="searchThisTag('${rank.t_name }')">#${rank.t_name }</a> <small style="color:red;">(총 ${rank.t_usecnt }개)</small></td>
 					</tr>
 				</c:forEach>
-				<tr><td><a href="#">인기태그 사용현황</a></td></tr>
+				<tr><td><a href="tagStatusMenu.do">인기태그 사용현황</a></td></tr>
 			</table>
 		</div>
 		

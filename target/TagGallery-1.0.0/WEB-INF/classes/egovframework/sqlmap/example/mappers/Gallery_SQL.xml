@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="egovframework.example.gallery.service.impl.GalleryMapper">
+
+	<select id="login" resultType="UserVO">
+		SELECT u_id, u_name
+		FROM user
+		WHERE u_id = #{u_id} 
+			AND u_pwd = #{u_pwd}
+	</select>
+	
+	<select id="selectMaxGseq" resultType="int">
+		SELECT IFNULL(max(g_seq),0) +1 from gallery
+	</select>
+	
+	<insert id="insertGallery">
+		INSERT INTO gallery(g_seq
+					  	   ,g_title
+				   	  	   ,g_content
+				   	  	   ,g_regdate
+				   	  	   ,g_tag
+				   	  	   ,g_writer
+						   )
+					VALUES(#{g_seq}
+					  	  ,#{g_title}
+					  	  ,#{g_content}
+					  	  ,sysdate()
+					  	  ,#{g_tag}
+					  	  ,#{g_writer}
+						  )
+	</insert>
+	
+	<insert id="insertFile">
+		INSERT INTO files(f_originname
+						 ,f_uploadname
+						 ,f_thumbname
+						 ,f_fsize
+						 ,g_seq
+						 )
+					VALUES(#{f_originname}
+						  ,#{f_uploadname}
+						  ,#{f_thumbname}
+						  ,#{f_fsize}
+						  ,#{g_seq}
+						  )
+	</insert>
+	
+	<insert id="insertTag">
+		INSERT INTO tag(t_name
+					   ,t_regdate
+					   ,g_seq
+					   )
+				VALUES(#{t_name}
+					  ,sysdate()
+					  ,#{g_seq}
+					  )
+	</insert>
+	
+	<select id="selectGalleryList" resultType="galleryVO">
+		SELECT g_seq, g_title, g_content, g_regdate, g_readcnt, g_tag, g_writer, (SELECT f_thumbname FROM files f WHERE f.g_seq = g.g_seq GROUP BY g_seq) AS g_thumbname
+		FROM gallery g
+		WHERE 1 = 1
+		<if test="searchKeyword != null and searchKeyword != ''">
+			AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+		</if>
+		ORDER BY g_seq DESC
+		LIMIT #{firstIndex}, #{recordCountPerPage}
+	</select>
+	
+	<select id="selectGalleryListTotCnt" resultType="int">
+		SELECT COUNT(*) totcnt
+			FROM gallery
+			WHERE 1 = 1
+			<if test="searchKeyword != null and searchKeyword != ''">
+				AND ${searchCondition} LIKE CONCAT('%', #{searchKeyword}, '%')
+			</if>
+	</select>
+	
+	<select id="selectTagRank" resultType="tagVO">
+		SELECT t_name, COUNT(t_name) AS t_usecnt, SUM(t_readcnt) AS t_readcnt
+		FROM tag
+		GROUP BY t_name
+		ORDER BY t_usecnt DESC, t_name ASC
+		LIMIT 5
+	</select>
+	
+	<select id="selectGallery" resultType="galleryVO">
+		SELECT *
+		FROM gallery
+		WHERE g_seq = ${g_seq}
+	</select>
+	
+	<update id="updateGalleryReadCnt">
+		UPDATE gallery
+		SET g_readcnt = g_readcnt + 1
+		WHERE g_seq = ${g_seq}
+	</update>
+	
+	<update id="updateTagReadCnt">
+		UPDATE Tag
+		SET t_readcnt = t_readcnt + 1
+		WHERE g_seq = ${g_seq}
+	</update>
+	
+	<select id="selectTagDownCnt" resultType="int">
+		SELECT SUM(f.f_downcnt) AS t_downcnt
+		FROM gallery g
+		JOIN files f 
+		WHERE g.g_seq = f.g_seq AND g_tag LIKE CONCAT('%', #{t_name}, '%')
+	</select>
+	
+	<select id="selectFile" resultType="filesVO">
+		SELECT *
+		FROM files
+		WHERE f_seq = #{f_seq}
+	</select>
+	
+	<update id="updateFileDownCnt">
+		UPDATE files
+		SET f_downcnt = f_downcnt + 1
+		WHERE f_seq = #{f_seq}
+	</update>
+	
+	<select id="selectFileList" resultType="filesVO">
+		SELECT *
+		FROM files
+		WHERE g_seq = ${g_seq}
+		ORDER BY f_seq;
+	</select>
+	
+	<update id="updateGallery">
+		UPDATE gallery
+		SET g_title = #{g_title} 
+		   ,g_content = #{g_content}
+		   ,g_tag = #{g_tag}
+		WHERE g_seq = #{g_seq} AND g_writer = #{g_writer}
+	</update>
+	
+	<delete id="deleteTag">
+		DELETE FROM tag
+		WHERE t_name = #{t_name} AND g_seq = #{g_seq}
+	</delete>
+	
+	<delete id="deleteFile">
+		DELETE FROM files
+		WHERE f_seq = #{f_seq}
+	</delete>
+	
+	<delete id="deleteGallery">
+		DELETE FROM gallery
+		WHERE g_seq = ${g_seq} AND g_writer = #{g_writer}
+	</delete>
+</mapper>

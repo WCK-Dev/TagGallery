@@ -26,6 +26,8 @@ public interface GalleryService {
 	
 	void updateFileDownCnt(FilesVO vo);
 	
+	int selectTagDownCnt(TagVO vo);
+	
 	List<FilesVO> selectFileList(GalleryVO vo);
 	
 	int updateGallery(GalleryVO vo);

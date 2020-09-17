@@ -381,4 +381,24 @@ public class GalleryController {
 		
 	}
 	
+	@RequestMapping(value="tagStatusMenu.do")
+	public String tagStatusMenu () {
+		
+		return "gallery/tagStatusMenu";
+	}
+	
+	@RequestMapping(value="getTagStatus.do")
+	@ResponseBody
+	public List<TagVO> getTagStatus() {
+		List<TagVO> tagRank = galleryService.selectTagRank();
+		
+		for(TagVO eachTag : tagRank) {
+			eachTag.setT_downcnt(galleryService.selectTagDownCnt(eachTag));
+		}
+		
+		System.err.println(tagRank);
+		
+		return tagRank;
+	}
+	
 }
