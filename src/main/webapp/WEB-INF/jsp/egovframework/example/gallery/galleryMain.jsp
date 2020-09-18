@@ -44,6 +44,14 @@ function searchThisTag(searchKeyword){
 	document.galleryListForm.submit();
 }
 
+if('${galleryErrorMsg}' == 'true'){
+	alert("존재하지 않는 글입니다.");
+}
+
+if('${updateErrorMsg}' == 'true'){
+	alert("게시글 수정은 본인만 가능합니다.");
+}
+
 </script>
 
 </head>

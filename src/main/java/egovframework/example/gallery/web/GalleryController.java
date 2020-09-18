@@ -188,21 +188,40 @@ public class GalleryController {
 	}
 	
 	@RequestMapping(value="readGallery.do")
-	public String readGallery(GalleryVO gvo, ModelMap model) {
+	public String readGallery(GalleryVO gvo, ModelMap model, RedirectAttributes ra) {
+		gvo = galleryService.selectGallery(gvo);
 		
-		model.addAttribute("gallery", galleryService.selectGallery(gvo));
-		model.addAttribute("fileList", galleryService.selectFileList(gvo));
-		
-		return "gallery/readGallery";
+		if(gvo == null) {
+			ra.addFlashAttribute("galleryErrorMsg", "true");
+			return "redirect:/galleryMain.do";
+		} else {
+			model.addAttribute("gallery", gvo);
+			model.addAttribute("fileList", galleryService.selectFileList(gvo));
+			
+			return "gallery/readGallery";
+		}
 	}
 	
 	@RequestMapping(value="updateGallery.do", method=RequestMethod.GET)
-	public String updateGallery(GalleryVO gvo, ModelMap model) {
+	public String updateGallery(GalleryVO gvo, ModelMap model, RedirectAttributes ra, HttpSession session) {
 		
-		model.addAttribute("gallery", galleryService.selectGallery(gvo));
-		model.addAttribute("fileList", galleryService.selectFileList(gvo));
+		gvo = galleryService.selectGallery(gvo);
 		
-		return "gallery/updateGallery";
+		if(gvo == null) {
+			ra.addFlashAttribute("galleryErrorMsg", "true");
+			return "redirect:/galleryMain.do";
+		} else {
+			
+			if(!((UserVO)session.getAttribute("user")).getU_id().equals(gvo.getG_writer())) {
+				ra.addFlashAttribute("updateErrorMsg", "true");
+				return "redirect:/galleryMain.do";
+			} else {
+				model.addAttribute("gallery", gvo);
+				model.addAttribute("fileList", galleryService.selectFileList(gvo));
+				return "gallery/updateGallery";
+			}
+		}
+		
 	}
 	
 	@RequestMapping(value="updateGallery.do", method=RequestMethod.POST)
