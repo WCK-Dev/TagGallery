@@ -28,6 +28,8 @@
 
 .text-right { clear: both;}
 
+
+
 </style>
 
 <script>
@@ -75,8 +77,8 @@ if('${updateErrorMsg}' == 'true'){
 				  <option value="f_originname" <c:if test="${gallery.searchCondition=='f_originname'}">selected</c:if>>첨부파일명</option>
 				</select>
 				<div class="row mx-0">
-					<input class="col form-control mt-1" type="text" name="searchKeyword" placeholder="Search" value="${gallery.searchKeyword }">
-					<button class="col btn btn-primary my-0 mb-2 ml-3" type="submit">검색</button>
+					<input class="col-7 form-control mt-1" type="text" name="searchKeyword" placeholder="Search" value="${gallery.searchKeyword }">
+					<button class="btn btn-primary my-0 mb-2 ml-3" type="submit">검색</button>
 				</div>
 			<input type="hidden" id="pageIndex" name="pageIndex" value="1">
 		</form>

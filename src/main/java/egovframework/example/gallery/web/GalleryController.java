@@ -124,7 +124,6 @@ public class GalleryController {
 		
 		//갤러리 글 등록
 		int g_seq = galleryService.selectMaxGseq();
-		System.out.println(g_seq);
 		gvo.setG_seq(g_seq);
 		galleryService.insertGallery(gvo);
 		
@@ -141,7 +140,7 @@ public class GalleryController {
         //선택된 파일의 숫자를 List로 받아 반복하면서, 업로드 진행
 		List<MultipartFile> fileList = mtfRequest.getFiles("files");
 		
-		if(!(fileList.size() == 1 && fileList.get(0).getOriginalFilename().equals(""))) {
+		if(!(fileList.size() == 1 && fileList.get(0).getOriginalFilename().equals(""))) { // 파일이 존재하지않는지 검사 (있으면 if안에서 업로드를 수행)
 			
 			for (int i=0; i<fileList.size(); i++) {
 				
@@ -448,8 +447,6 @@ public class GalleryController {
 			eachTag.setT_downcnt(galleryService.selectTagDownCnt(eachTag));
 		}
 		
-		System.err.println(tagRank);
-		
 		return tagRank;
 	}
 	
@@ -495,13 +492,13 @@ public class GalleryController {
 	    cell.setCellValue("태그명");
 	    cell = row.createCell(1);
 	    cell.setCellStyle(headStyle);
-	    cell.setCellValue("사용 횟수");
+	    cell.setCellValue("사용수");
 	    cell = row.createCell(2);
 	    cell.setCellStyle(headStyle);
 	    cell.setCellValue("조회수");
 	    cell = row.createCell(3);
 	    cell.setCellStyle(headStyle);
-	    cell.setCellValue("다운로드수");
+	    cell.setCellValue("다운수");
 
 	    // 데이터 부분 생성
 	    for(TagVO vo : tagRank) {
